@@ -36,32 +36,32 @@ async function run() {
         });
 
 
-        // // query to show a user
-        // app.get('/users/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const user = await userCollections.findOne(query);
+        // query to show a user
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const user = await userCollections.findOne(query);
 
-        //     res.send(user);
-        // })
+            res.send(user);
+        })
 
 
-        // // query to update a user
-        // app.put('/users/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const filter = { _id: new ObjectId(id) };
-        //     const user = req.body;
-        //     const options = { upsert: true };
-        //     const updatedUser = {
-        //         $set: {
-        //             name: user.name,
-        //             address: user.address,
-        //             email: user.email,
-        //         }
-        //     }
-        //     const result = await userCollections.updateOne(filter, updatedUser, options)
-        //     res.send(result);
-        // })
+        // query to update a user
+        app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const user = req.body;
+            const options = { upsert: true };
+            const updatedUser = {
+                $set: {
+                    name: user.name,
+                    address: user.address,
+                    email: user.email,
+                }
+            }
+            const result = await userCollections.updateOne(filter, updatedUser, options)
+            res.send(result);
+        })
 
 
         // query to delete a user
