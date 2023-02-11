@@ -36,13 +36,55 @@ async function run() {
         });
 
 
-        // query to show a user
+        // query to show a user by id
         app.get('/users/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const user = await userCollections.findOne(query);
 
             res.send(user);
+        })
+
+
+        // query to add a user as admin
+        app.put('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await userCollections.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
+
+        // query to find admin user by email
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollections.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
+        })
+
+
+        // query to find employer user by email
+        app.get('/users/employer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollections.findOne(query);
+            res.send({ isEmployer: user?.userType === 'employer' });
+        })
+
+
+        // query to find jobseeker user by email
+        app.get('/users/jobseeker/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollections.findOne(query);
+            res.send({ isJobseeker: user?.userType === 'jobseeker' });
         })
 
 
