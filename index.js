@@ -36,14 +36,14 @@ async function run() {
         });
 
 
-        // query to show a user by id
-        app.get('/users/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const user = await userCollections.findOne(query);
+        // // query to show a user by id
+        // app.get('/users/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) };
+        //     const user = await userCollections.findOne(query);
 
-            res.send(user);
-        })
+        //     res.send(user);
+        // })
 
 
         // query to add a user as admin
@@ -53,7 +53,7 @@ async function run() {
             const options = { upsert: true }
             const updatedDoc = {
                 $set: {
-                    role: 'admin'
+                    role: "admin"
                 }
             }
             const result = await userCollections.updateOne(filter, updatedDoc, options)
@@ -75,7 +75,7 @@ async function run() {
             const email = req.params.email;
             const query = { email }
             const user = await userCollections.findOne(query);
-            res.send({ isEmployer: user?.userType === 'employer' });
+            res.send({ isEmployer: user?.userType === "employer" });
         })
 
 
@@ -84,7 +84,7 @@ async function run() {
             const email = req.params.email;
             const query = { email }
             const user = await userCollections.findOne(query);
-            res.send({ isJobseeker: user?.userType === 'jobseeker' });
+            res.send({ isJobSeeker: user?.userType === "jobseeker" });
         })
 
 
