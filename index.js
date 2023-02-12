@@ -70,7 +70,7 @@ async function run() {
         })
 
 
-        // query to find employer user by email
+        // query to find a employer user by email
         app.get('/users/employer/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
