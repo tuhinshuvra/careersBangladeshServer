@@ -18,6 +18,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const userCollections = client.db('careersBangladeshDB').collection('users');
+        const employerCollections = client.db('careersBangladeshDB').collection('employer');
+        const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
 
         // query to show all users
         app.get('/users', async (req, res) => {
@@ -114,6 +116,49 @@ async function run() {
             res.send(result);
             // console.log('trying to delete', id);
         });
+
+
+
+
+
+
+
+
+        // query to save a employee Profile
+        app.post('/emplyerProfile', async (req, res) => {
+            const employer = req.body;
+            const result = await employerCollections.insertOne(employer);
+            res.send(result);
+        });
+
+
+
+
+        // query to show a employee by emailid
+        app.get('/employer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const employer = await employerCollections.findOne(query);
+            res.send(employer);
+        })
+
+
+        // query to save a jobseeker Profile
+        app.post('/jobseekerProfile', async (req, res) => {
+            const jobseeker = req.body;
+            const result = await jobseekerCollections.insertOne(jobseeker);
+            res.send(result);
+        });
+
+        // query to show a jobseeker by emailid
+        app.get('/jobseeker/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const jobseeker = await jobseekerCollections.findOne(query);
+            res.send(jobseeker);
+        })
+
+
 
 
     }
