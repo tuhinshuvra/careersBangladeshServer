@@ -18,6 +18,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const jobCategoriesCollections = client.db('careersBangladeshDB').collection('jobCategories');
+        const jobCollections = client.db('careersBangladeshDB').collection('jobs');
+
         const userCollections = client.db('careersBangladeshDB').collection('users');
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
@@ -53,6 +55,46 @@ async function run() {
         // });
 
         //////////////////////////// job Category Query Section End//////////////////////////////////////////////
+
+
+
+
+
+        //////////////////////////// job Post Query Section Start//////////////////////////////////////////////
+        // query to save a Job
+        app.post('/jobs', async (req, res) => {
+            const job = req.body;
+            const result = await jobCollections.insertOne(job);
+            res.send(result);
+        });
+
+
+        // query to show Job 
+        app.get('/jobs', async (req, res) => {
+            const query = {};
+            const cursor = jobCollections.find(query);
+            const job = await cursor.toArray();
+            res.send(job);
+        });
+
+        // show a job by id
+        app.get('/jobs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const job = await jobCollections.findOne(query);
+            res.send(job);
+        })
+
+        // // query to delete a Job
+        // app.delete('/jobs/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const result = await jobCollections.deleteOne(query);
+        //     res.send(result);
+        //     // console.log('trying to delete', id);
+        // });
+
+        //////////////////////////// job Post Query Section End//////////////////////////////////////////////
 
 
 
