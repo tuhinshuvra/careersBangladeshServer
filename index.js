@@ -17,9 +17,48 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // async await
 async function run() {
     try {
+        const jobCategoriesCollections = client.db('careersBangladeshDB').collection('jobCategories');
         const userCollections = client.db('careersBangladeshDB').collection('users');
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
+
+
+
+        //////////////////////////// job Category Query Section Start//////////////////////////////////////////////
+
+        // query to save a Job Category
+        app.post('/jobCategories', async (req, res) => {
+            const category = req.body;
+            const result = await jobCategoriesCollections.insertOne(category);
+            res.send(result);
+        });
+
+
+        // query to show Job Categories
+        app.get('/jobCategories', async (req, res) => {
+            const query = {};
+            const cursor = jobCategoriesCollections.find(query);
+            const category = await cursor.toArray();
+            res.send(category);
+        });
+
+
+        // // query to delete a JobCategory
+        // app.delete('/jobCategories/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const result = await jobCategoriesCollections.deleteOne(query);
+        //     res.send(result);
+        //     // console.log('trying to delete', id);
+        // });
+
+        //////////////////////////// job Category Query Section End//////////////////////////////////////////////
+
+
+
+
+
+        //////////////////////////// user query Section start//////////////////////////////////////////////
 
         // query to show all users
         app.get('/users', async (req, res) => {
@@ -36,6 +75,7 @@ async function run() {
             const result = await userCollections.insertOne(user);
             res.send(result);
         });
+
 
 
         // // query to show a user by id
@@ -117,12 +157,14 @@ async function run() {
             // console.log('trying to delete', id);
         });
 
+        //////////////////////////// user query Section end //////////////////////////////////////////////
 
 
 
 
 
 
+        //////////////////////////// Employ Query Section Start //////////////////////////////////////////////
 
         // query to save a employee Profile
         app.post('/emplyerProfile', async (req, res) => {
@@ -142,6 +184,13 @@ async function run() {
             res.send(employer);
         })
 
+        //////////////////////////// Employ Query Section End //////////////////////////////////////////////
+
+
+
+
+
+        //////////////////////////// Job Seeker Query Section Start //////////////////////////////////////////////     
 
         // query to save a jobseeker Profile
         app.post('/jobseekerProfile', async (req, res) => {
@@ -157,8 +206,7 @@ async function run() {
             const jobseeker = await jobseekerCollections.findOne(query);
             res.send(jobseeker);
         })
-
-
+        //////////////////////////// Job Seeker Query Section End //////////////////////////////////////////////
 
 
     }
