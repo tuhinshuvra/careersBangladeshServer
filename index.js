@@ -23,6 +23,7 @@ async function run() {
         const userCollections = client.db('careersBangladeshDB').collection('users');
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
+        const applicationCollections = client.db('careersBangladeshDB').collection('applications');
 
 
 
@@ -43,6 +44,9 @@ async function run() {
             const category = await cursor.toArray();
             res.send(category);
         });
+
+
+
 
 
         // // query to delete a JobCategory
@@ -85,6 +89,31 @@ async function run() {
             res.send(job);
         })
 
+
+        // app.get('/categoryJobs', async (req, res) => {
+        //     let query = {};
+        //     if (req.query.category) {
+        //         query = {
+        //             category: req.query.category
+        //         }
+        //     }
+        //     const cursor = jobCollections.find(query).sort({ postDate: -1 });
+        //     const jobs = await cursor.toArray();
+        //     res.send(jobs);
+        // })
+
+
+        app.get('/categoryJobs', async (req, res) => {
+            const category = req.query.category;
+
+            const query = { category: category };
+            const jobs = await jobCollections.find(query).toArray();
+            res.send(jobs);
+        })
+
+
+
+
         // // query to delete a Job
         // app.delete('/jobs/:id', async (req, res) => {
         //     const id = req.params.id;
@@ -99,8 +128,44 @@ async function run() {
 
 
 
+        //////////////////////////// job Application Query Section Start //////////////////////////////////////////////  
 
-        //////////////////////////// user query Section start//////////////////////////////////////////////
+
+        // save application on database
+        app.post('/applications', async (req, res) => {
+            const application = req.body;
+            result = await applicationCollections.insertOne(application);
+            res.send(result);
+        })
+
+
+        // query to show all application
+        app.get('/applications', async (req, res) => {
+            const query = {};
+            const cursor = applicationCollections.find(query)
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // // show all application by service
+        // app.get('/application', async (req, res) => {
+        //     let query = {};
+        //     if (req.query.service) {
+        //         query = {
+        //             service: req.query.service
+        //         }
+        //     }
+        //     const cursor = applicationCollections.find(query).sort({ reviewPostDate: -1 });
+        //     const application = await cursor.toArray();
+        //     res.send(application);
+        // })
+        //////////////////////////// job Application Query Section End //////////////////////////////////////////////
+
+
+
+
+
+        //////////////////////////// user query Section start //////////////////////////////////////////////
 
         // query to show all users
         app.get('/users', async (req, res) => {
