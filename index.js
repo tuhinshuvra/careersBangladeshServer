@@ -147,6 +147,28 @@ async function run() {
             res.send(result);
         })
 
+
+        // show all application by job seeker email
+        app.get('/jobseekerapply', async (req, res) => {
+
+            // const decoded = req.decoded;
+            // // console.log('inside orders api : ', decoded);
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: 'Forbidden Access' })
+            // }
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = applicationCollections.find(query).sort({ applicationDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+
         // // show all application by service
         // app.get('/application', async (req, res) => {
         //     let query = {};
