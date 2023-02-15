@@ -24,6 +24,7 @@ async function run() {
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
         const applicationCollections = client.db('careersBangladeshDB').collection('applications');
+        const savedJobCollections = client.db('careersBangladeshDB').collection('savedJobs');
 
 
 
@@ -169,6 +170,8 @@ async function run() {
         })
 
 
+
+
         // // show all application by service
         // app.get('/application', async (req, res) => {
         //     let query = {};
@@ -183,6 +186,44 @@ async function run() {
         // })
         //////////////////////////// job Application Query Section End //////////////////////////////////////////////
 
+
+
+
+        //////////////////////////// Saved Job Query Section Start//////////////////////////////////////////////        
+        // query to save a jab as favorite
+        app.post('/savedjobs', async (req, res) => {
+            const savedjob = req.body;
+            result = await savedJobCollections.insertOne(savedjob);
+            res.send(result);
+        })
+
+
+        app.get('/savedjobs', async (req, res) => {
+            const query = {};
+            const result = await savedJobCollections.find(query).toArray();
+            res.send(result);
+        })
+
+        // show all saved job by job seeker email
+        app.get('/jobseekersavedjobs', async (req, res) => {
+
+            // const decoded = req.decoded;
+            // // console.log('inside orders api : ', decoded);
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: 'Forbidden Access' })
+            // }
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = savedJobCollections.find(query).sort({ savedDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+        //////////////////////////// Saved Job Query Section End//////////////////////////////////////////////
 
 
 
@@ -293,7 +334,7 @@ async function run() {
 
 
 
-        //////////////////////////// Employ Query Section Start //////////////////////////////////////////////
+        //////////////////////////// Employer Query Section Start //////////////////////////////////////////////
 
         // query to save a employee Profile
         app.post('/emplyerProfile', async (req, res) => {
@@ -305,7 +346,7 @@ async function run() {
 
 
 
-        // query to show a employee by emailid
+        // query to show a employer by emailid
         app.get('/employer/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email };
@@ -313,7 +354,7 @@ async function run() {
             res.send(employer);
         })
 
-        //////////////////////////// Employ Query Section End //////////////////////////////////////////////
+        //////////////////////////// Employer Query Section End //////////////////////////////////////////////
 
 
 
@@ -347,11 +388,6 @@ async function run() {
     }
 }
 run().catch(err => console.log(err));
-
-
-
-
-
 
 
 
