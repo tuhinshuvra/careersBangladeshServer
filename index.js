@@ -100,6 +100,21 @@ async function run() {
         })
 
 
+        // show all saved job by job category
+        app.get('/jobbycategory', async (req, res) => {
+
+            let query = {};
+            if (req.query.category) {
+                query = {
+                    category: req.query.category
+                }
+            }
+            const cursor = jobCollections.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+
         // _id jobId email name postersEmail jobTitle organization category applicationDate 
 
 
@@ -222,7 +237,7 @@ async function run() {
             const result = await savedJobCollections.find(query).toArray();
             res.send(result);
         })
-        
+
 
         // show all saved job by job seeker email
         app.get('/jobseekersavedjobs', async (req, res) => {
@@ -375,8 +390,8 @@ async function run() {
         })
 
 
-          // show all application by job seeker email
-          app.get('/postedjob', async (req, res) => { 
+        // show all application by job seeker email
+        app.get('/postedjob', async (req, res) => {
 
             let query = {};
             if (req.query.email) {
