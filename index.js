@@ -91,17 +91,36 @@ async function run() {
         })
 
 
-        // app.get('/categoryJobs', async (req, res) => {
-        //     let query = {};
-        //     if (req.query.category) {
-        //         query = {
-        //             category: req.query.category
-        //         }
-        //     }
-        //     const cursor = jobCollections.find(query).sort({ postDate: -1 });
-        //     const jobs = await cursor.toArray();
-        //     res.send(jobs);
-        // })
+        // show all applicant on a job
+        app.get('/applicantList', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const job = await jobCollections.findOne(query);
+            res.send(job);
+        })
+
+
+        // _id jobId email name postersEmail jobTitle organization category applicationDate 
+
+
+
+
+
+        app.get('/jobapplicant', async (req, res) => {
+            let query = {};
+            if (req.query.jobId) {
+                query = {
+                    jobId: req.query.jobId
+                }
+            }
+
+            // console.log("query jobId  : ", query)
+
+            const cursor = applicationCollections.find(query);
+            // .sort({ reviewPostDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
         app.get('/categoryJobs', async (req, res) => {
@@ -203,6 +222,7 @@ async function run() {
             const result = await savedJobCollections.find(query).toArray();
             res.send(result);
         })
+        
 
         // show all saved job by job seeker email
         app.get('/jobseekersavedjobs', async (req, res) => {
@@ -352,6 +372,22 @@ async function run() {
             const query = { email };
             const employer = await employerCollections.findOne(query);
             res.send(employer);
+        })
+
+
+          // show all application by job seeker email
+          app.get('/postedjob', async (req, res) => { 
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = jobCollections.find(query);
+            // .sort({ applicationDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
         })
 
         //////////////////////////// Employer Query Section End //////////////////////////////////////////////
