@@ -101,18 +101,18 @@ async function run() {
 
 
         // show all saved job by job category
-        app.get('/jobbycategory', async (req, res) => {
-
-            let query = {};
-            if (req.query.category) {
-                query = {
-                    category: req.query.category
+            app.get('/jobbycategory', async (req, res) => {            
+    
+                let query = {};
+                if (req.query.category) {
+                    query = {
+                        category: req.query.category
+                    }
                 }
-            }
-            const cursor = jobCollections.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
-        })
+                const cursor = jobCollections.find(query);
+                const result = await cursor.toArray();
+                res.send(result);
+            })
 
 
         // _id jobId email name postersEmail jobTitle organization category applicationDate 
