@@ -1,17 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// midddleware
+// midddle wares
 app.use(cors())
 app.use(express.json())
 
-// username : gblusers, password: PlZSg836FOMJgzkq
-const uri = `mongodb+srv://gblusers:PlZSg836FOMJgzkq@cluster0.v2wwlww.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.v2wwlww.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+// console.log(process.env.DB_USER, process.env.DB_PASSWORD)
 
 
 // async await
@@ -101,18 +102,19 @@ async function run() {
 
 
         // show all saved job by job category
-            app.get('/jobbycategory', async (req, res) => {            
-    
-                let query = {};
-                if (req.query.category) {
-                    query = {
-                        category: req.query.category
-                    }
+        app.get('/jobbycategory', async (req, res) => {
+
+            let query = {};
+            if (req.query.category) {
+                query = {
+                    category: req.query.category
                 }
-                const cursor = jobCollections.find(query);
-                const result = await cursor.toArray();
-                res.send(result);
-            })
+            }
+            // console.log("Category id : ", query)
+            const cursor = jobCollections.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
         // _id jobId email name postersEmail jobTitle organization category applicationDate 
