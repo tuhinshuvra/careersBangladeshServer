@@ -117,6 +117,24 @@ async function run() {
         })
 
 
+         // search job by jobTitle saved job by job category
+         app.get('/jobByTitle', async (req, res) => {
+
+            let query = {};
+            if (req.query.jobTitle) {
+                query = {
+                    jobTitle: req.query.jobTitle
+                }
+            }
+            // console.log("Category id : ", query)
+            const cursor = jobCollections.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+
+
+
         // _id jobId email name postersEmail jobTitle organization category applicationDate 
 
 
@@ -334,6 +352,18 @@ async function run() {
             const query = { email }
             const user = await userCollections.findOne(query);
             res.send({ isJobSeeker: user?.userType === "jobseeker" });
+        })
+
+        // db.inventory.find( { status: "A" }, { item: 1, status: 1 } )
+
+        // query to find applied job by job and employee
+        app.get('/applidjob', async (req, res) => {
+            const jobId = req.params.jobId;
+            const email = req.params.email;
+            const jobs= req.params.jobs;
+            const query = { email }
+            const application = await applicationCollections.findOne(query);
+            res.send({ isApplied: application?.jobs === "jobseeker" });
         })
 
 
