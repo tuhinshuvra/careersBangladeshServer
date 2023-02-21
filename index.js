@@ -74,7 +74,24 @@ async function run() {
         // query to show Job 
         app.get('/jobs', async (req, res) => {
             const query = {};
-            const cursor = jobCollections.find(query);
+            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const job = await cursor.toArray();
+            res.send(job);
+        });
+
+        // query to show Job 
+        app.get('/jobSearch', async (req, res) => {
+            const search = req.query.search;
+            console.log("search data : ", search)
+            // let query = {}
+            // if (search.length) {
+            const query = {
+                $text: {
+                    $search: search
+                }
+            };
+            // }
+            const cursor = jobCollections.find(query).sort({ postDate: -1 });
             const job = await cursor.toArray();
             res.send(job);
         });
@@ -394,7 +411,7 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = jobCollections.find(query);
+            const cursor = jobCollections.find(query).sort({ postDate: -1 });
             // .sort({ applicationDate: -1 });
             const result = await cursor.toArray();
             res.send(result);
