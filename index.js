@@ -48,9 +48,6 @@ async function run() {
         });
 
 
-
-
-
         // // query to delete a JobCategory
         // app.delete('/jobCategories/:id', async (req, res) => {
         //     const id = req.params.id;
@@ -61,7 +58,6 @@ async function run() {
         // });
 
         //////////////////////////// job Category Query Section End//////////////////////////////////////////////
-
 
 
 
@@ -117,8 +113,8 @@ async function run() {
         })
 
 
-         // search job by jobTitle saved job by job category
-         app.get('/jobByTitle', async (req, res) => {
+        // search job by jobTitle saved job by job category
+        app.get('/jobByTitle', async (req, res) => {
 
             let query = {};
             if (req.query.jobTitle) {
@@ -131,14 +127,6 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
-
-
-
-
-        // _id jobId email name postersEmail jobTitle organization category applicationDate 
-
-
-
 
 
         app.get('/jobapplicant', async (req, res) => {
@@ -223,21 +211,6 @@ async function run() {
             res.send(result);
         })
 
-
-
-
-        // // show all application by service
-        // app.get('/application', async (req, res) => {
-        //     let query = {};
-        //     if (req.query.service) {
-        //         query = {
-        //             service: req.query.service
-        //         }
-        //     }
-        //     const cursor = applicationCollections.find(query).sort({ reviewPostDate: -1 });
-        //     const application = await cursor.toArray();
-        //     res.send(application);
-        // })
         //////////////////////////// job Application Query Section End //////////////////////////////////////////////
 
 
@@ -262,12 +235,6 @@ async function run() {
         // show all saved job by job seeker email
         app.get('/jobseekersavedjobs', async (req, res) => {
 
-            // const decoded = req.decoded;
-            // // console.log('inside orders api : ', decoded);
-            // if (decoded.email !== req.query.email) {
-            //     res.status(403).send({ message: 'Forbidden Access' })
-            // }
-
             let query = {};
             if (req.query.email) {
                 query = {
@@ -283,7 +250,14 @@ async function run() {
 
 
 
-        //////////////////////////// user query Section start //////////////////////////////////////////////
+        //////////////////////////// User query Section start //////////////////////////////////////////////
+
+        // query to save a new user
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollections.insertOne(user);
+            res.send(result);
+        });
 
         // query to show all users
         app.get('/users', async (req, res) => {
@@ -293,15 +267,21 @@ async function run() {
             res.send(users);
         });
 
-
-        // query to save a new user
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            const result = await userCollections.insertOne(user);
-            res.send(result);
+        // query to show all employer
+        app.get('/employers', async (req, res) => {
+            const query = { userType: { $eq: "employer" } };
+            const cursor = userCollections.find(query);
+            const employers = await cursor.toArray();
+            res.send(employers);
         });
 
-
+        // query to show all jobseeker
+        app.get('/jobseekers', async (req, res) => {
+            const query = { userType: { $eq: "jobseeker" } };
+            const cursor = userCollections.find(query);
+            const jobseekers = await cursor.toArray();
+            res.send(jobseekers);
+        });
 
         // // query to show a user by id
         // app.get('/users/:id', async (req, res) => {
@@ -354,19 +334,6 @@ async function run() {
             res.send({ isJobSeeker: user?.userType === "jobseeker" });
         })
 
-        // db.inventory.find( { status: "A" }, { item: 1, status: 1 } )
-
-        // query to find applied job by job and employee
-        app.get('/applidjob', async (req, res) => {
-            const jobId = req.params.jobId;
-            const email = req.params.email;
-            const jobs= req.params.jobs;
-            const query = { email }
-            const application = await applicationCollections.findOne(query);
-            res.send({ isApplied: application?.jobs === "jobseeker" });
-        })
-
-
         // query to update a user
         app.put('/users/:id', async (req, res) => {
             const id = req.params.id;
@@ -377,7 +344,7 @@ async function run() {
                 $set: {
                     name: user.name,
                     address: user.address,
-                    email: user.email,
+                    // email: user.email,
                 }
             }
             const result = await userCollections.updateOne(filter, updatedUser, options)
@@ -394,9 +361,7 @@ async function run() {
             // console.log('trying to delete', id);
         });
 
-        //////////////////////////// user query Section end //////////////////////////////////////////////
-
-
+        //////////////////////////// User query Section end //////////////////////////////////////////////
 
 
 
@@ -409,8 +374,6 @@ async function run() {
             const result = await employerCollections.insertOne(employer);
             res.send(result);
         });
-
-
 
 
         // query to show a employer by emailid
@@ -438,8 +401,6 @@ async function run() {
         })
 
         //////////////////////////// Employer Query Section End //////////////////////////////////////////////
-
-
 
 
 
@@ -471,9 +432,6 @@ async function run() {
     }
 }
 run().catch(err => console.log(err));
-
-
-
 
 
 
