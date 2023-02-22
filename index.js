@@ -83,14 +83,16 @@ async function run() {
         app.get('/jobSearch', async (req, res) => {
             const search = req.query.search;
             console.log("search data : ", search)
-            // let query = {}
-            // if (search.length) {
-            const query = {
-                $text: {
-                    $search: search
-                }
-            };
-            // }
+
+            let query = {}
+            if (search.length) {
+                query = {
+                    $text: {
+                        $search: search
+                    }
+                };
+            }
+
             const cursor = jobCollections.find(query).sort({ postDate: -1 });
             const job = await cursor.toArray();
             res.send(job);
