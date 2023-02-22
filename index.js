@@ -79,12 +79,12 @@ async function run() {
             res.send(job);
         });
 
-        // query to show Job 
+        // query to search  Job by search field
         app.get('/jobSearch', async (req, res) => {
             const search = req.query.search;
             console.log("search data : ", search)
-
             let query = {}
+
             if (search.length) {
                 query = {
                     $text: {
@@ -97,6 +97,27 @@ async function run() {
             const job = await cursor.toArray();
             res.send(job);
         });
+
+        // query to show Job 
+        app.get('/jobSearchHome/:search', async (req, res) => {
+            const search = req.params.search;
+            console.log("search data : ", search)
+            let query = {}
+
+            if (search.length) {
+                query = {
+                    $text: {
+                        $search: search
+                    }
+                };
+            }
+
+            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const job = await cursor.toArray();
+            res.send(job);
+        });
+
+
 
         // show a job by id
         app.get('/jobs/:id', async (req, res) => {
