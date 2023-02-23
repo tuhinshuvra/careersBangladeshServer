@@ -323,14 +323,14 @@ async function run() {
             res.send(jobseekers);
         });
 
-        // // query to show a user by id
-        // app.get('/users/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const user = await userCollections.findOne(query);
+        // query to show a user by id
+        app.get('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const user = await userCollections.findOne(query);
 
-        //     res.send(user);
-        // })
+            res.send(user);
+        })
 
 
         // query to add a user as admin
