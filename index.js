@@ -217,6 +217,17 @@ async function run() {
         // save application on database
         app.post('/applications', async (req, res) => {
             const application = req.body;
+            const query = {
+                jobId: application.jobId,
+                jobSeekerEmail: application.jobSeekerEmail,
+            }
+            const alreadyApplied = await applicationCollections.find(query).toArray();
+
+            if (alreadyApplied.length) {
+                const message = `You have already applied on this job${application.jobTitle}`;
+                return res.send({ acknowledged: false, message })
+            }
+
             result = await applicationCollections.insertOne(application);
             res.send(result);
         })
@@ -225,7 +236,7 @@ async function run() {
         // query to show all application
         app.get('/applications', async (req, res) => {
             const query = {};
-            const cursor = applicationCollections.find(query)
+            const cursor = applicationCollections.find(query).sort({ _id: -1 })
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -251,6 +262,16 @@ async function run() {
             res.send(result);
         })
 
+
+        // query to show already applied application
+        app.get('/appliedApplications', async (req, res) => {
+            const userEmail = req.query.email;
+            const jobId = req.query.email;
+            const query = { email }
+            const user = await applicationCollections.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
+        })
+
         //////////////////////////// job Application Query Section End //////////////////////////////////////////////
 
 
@@ -260,6 +281,22 @@ async function run() {
         // query to save a jab as favorite
         app.post('/savedjobs', async (req, res) => {
             const savedjob = req.body;
+            
+            const query={
+                jobId : savedjob.jobId,
+                email: savedjob.email,
+            }
+
+            const alreadySaved = await savedJobCollections.find(query).toArray();
+
+
+            if (alreadySaved.length) {
+                const message = `You have already saved the job `;
+                return res.send({ acknowledged: false, message })
+            }
+
+
+
             result = await savedJobCollections.insertOne(savedjob);
             res.send(result);
         })
@@ -276,9 +313,9 @@ async function run() {
         app.get('/jobseekersavedjobs', async (req, res) => {
 
             let query = {};
-            if (req.query.email) {
+            if (req.query.jobSeekerEmail) {
                 query = {
-                    email: req.query.email
+                    jobSeekerEmail: req.query.jobSeekerEmail
                 }
             }
             const cursor = savedJobCollections.find(query).sort({ savedDate: -1 });
