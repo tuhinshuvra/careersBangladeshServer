@@ -480,6 +480,15 @@ async function run() {
             res.send(result);
         })
 
+
+        // query to find is employer profile activated or not
+        app.get('/employers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const employer = await employerCollections.findOne(query);
+            res.send({ isEmployerActivated: employer?.email === email });
+        })
+
         //////////////////////////// Employer Query Section End //////////////////////////////////////////////
 
 
