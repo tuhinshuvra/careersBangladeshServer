@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { query } = require('express');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +25,8 @@ async function run() {
         const userCollections = client.db('careersBangladeshDB').collection('users');
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
+        const subscriberCollections = client.db('careersBangladeshDB').collection('subscribers');
+
         const applicationCollections = client.db('careersBangladeshDB').collection('applications');
         const savedJobCollections = client.db('careersBangladeshDB').collection('savedJobs');
 
@@ -281,9 +284,9 @@ async function run() {
         // query to save a jab as favorite
         app.post('/savedjobs', async (req, res) => {
             const savedjob = req.body;
-            
-            const query={
-                jobId : savedjob.jobId,
+
+            const query = {
+                jobId: savedjob.jobId,
                 email: savedjob.email,
             }
 
@@ -490,7 +493,7 @@ async function run() {
             res.send(result);
         });
 
-        // query to show a jobseeker by emailid
+        // query to show a jobseeker by email
         app.get('/jobseeker/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email };
@@ -498,6 +501,49 @@ async function run() {
             res.send(jobseeker);
         })
         //////////////////////////// Job Seeker Query Section End //////////////////////////////////////////////
+
+
+
+        //////////////////////////// Subscriber Query Section Start ////////////////////////////////////////////
+
+        // query to save a suscriber 
+        app.post('/subscribers', async (req, res) => {
+            const subscriber = req.body;
+
+            const query = {
+                subsEmail: subscriber.subsEmail,
+            }
+
+            const alreadySubscribed = await subscriberCollections.find(query).toArray();
+
+
+            if (alreadySubscribed.length) {
+                const message = `This email id already subscribed`;
+                return res.send({ acknowledged: false, message })
+            }
+
+            const result = await subscriberCollections.insertOne(subscriber);
+            res.send(result);
+        })
+
+        // query to show all suscriber 
+        app.get('/subscribers', async (req, res) => {
+            const query = {};
+            const result = await subscriberCollections.find(query).toArray();
+            res.send(result);
+        })
+
+        // query to delete a subscriber
+        app.delete('/subscribers/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log('Want to delete the ID', id)
+            const objectedId = { _id: new ObjectId(id) }
+            const result = await subscriberCollections.deleteOne(objectedId);
+            res.send(result);
+        })
+
+
+        //////////////////////////// Subscriber Query Section End //////////////////////////////////////////////
 
 
     }
