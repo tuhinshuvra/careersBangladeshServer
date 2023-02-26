@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { query } = require('express');
+const { api } = require('express');
 require('dotenv').config();
 
 const app = express();
@@ -24,7 +24,15 @@ async function run() {
 
         const userCollections = client.db('careersBangladeshDB').collection('users');
         const employerCollections = client.db('careersBangladeshDB').collection('employer');
+
         const jobseekerCollections = client.db('careersBangladeshDB').collection('jobseeker');
+        const employeePersonalDetails = client.db('careersBangladeshDB').collection('empPersonal');
+        const employeeExperiences = client.db('careersBangladeshDB').collection('empExperiences');
+        const employeeAcademics = client.db('careersBangladeshDB').collection('empAcademics');
+        const employeeCareers = client.db('careersBangladeshDB').collection('empCareers');
+        const employeeReferences = client.db('careersBangladeshDB').collection('empReferences');
+
+
         const subscriberCollections = client.db('careersBangladeshDB').collection('subscribers');
 
         const applicationCollections = client.db('careersBangladeshDB').collection('applications');
@@ -32,9 +40,9 @@ async function run() {
 
 
 
-        //////////////////////////// job Category Query Section Start//////////////////////////////////////////////
+        //////////////////////////// job Category api Section Start//////////////////////////////////////////////
 
-        // query to save a Job Category
+        // api to save a Job Category
         app.post('/jobCategories', async (req, res) => {
             const category = req.body;
             const result = await jobCategoriesCollections.insertOne(category);
@@ -42,31 +50,31 @@ async function run() {
         });
 
 
-        // query to show Job Categories
+        // api to show Job Categories
         app.get('/jobCategories', async (req, res) => {
-            const query = {};
-            const cursor = jobCategoriesCollections.find(query);
+            const api = {};
+            const cursor = jobCategoriesCollections.find(api);
             const category = await cursor.toArray();
             res.send(category);
         });
 
 
-        // // query to delete a JobCategory
+        // // api to delete a JobCategory
         // app.delete('/jobCategories/:id', async (req, res) => {
         //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) }
-        //     const result = await jobCategoriesCollections.deleteOne(query);
+        //     const api = { _id: new ObjectId(id) }
+        //     const result = await jobCategoriesCollections.deleteOne(api);
         //     res.send(result);
         //     // console.log('trying to delete', id);
         // });
 
-        //////////////////////////// job Category Query Section End//////////////////////////////////////////////
+        //////////////////////////// job Category api Section End//////////////////////////////////////////////
 
 
 
 
-        //////////////////////////// job Post Query Section Start//////////////////////////////////////////////
-        // query to save a Job
+        //////////////////////////// job Post api Section Start//////////////////////////////////////////////
+        // api to save a Job
         app.post('/jobs', async (req, res) => {
             const job = req.body;
             const result = await jobCollections.insertOne(job);
@@ -74,48 +82,48 @@ async function run() {
         });
 
 
-        // query to show Job 
+        // api to show Job 
         app.get('/jobs', async (req, res) => {
-            const query = {};
-            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const api = {};
+            const cursor = jobCollections.find(api).sort({ postDate: -1 });
             const job = await cursor.toArray();
             res.send(job);
         });
 
-        // query to search  Job by search field
+        // api to search  Job by search field
         app.get('/jobSearch', async (req, res) => {
-            const search = req.query.search;
+            const search = req.api.search;
             console.log("search data : ", search)
-            let query = {}
+            let api = {}
 
             if (search.length) {
-                query = {
+                api = {
                     $text: {
                         $search: search
                     }
                 };
             }
 
-            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const cursor = jobCollections.find(api).sort({ postDate: -1 });
             const job = await cursor.toArray();
             res.send(job);
         });
 
-        // query to show Job 
+        // api to show Job 
         app.get('/jobSearchHome/:search', async (req, res) => {
             const search = req.params.search;
             console.log("search data : ", search)
-            let query = {}
+            let api = {}
 
             if (search.length) {
-                query = {
+                api = {
                     $text: {
                         $search: search
                     }
                 };
             }
 
-            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const cursor = jobCollections.find(api).sort({ postDate: -1 });
             const job = await cursor.toArray();
             res.send(job);
         });
@@ -125,8 +133,8 @@ async function run() {
         // show a job by id
         app.get('/jobs/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const job = await jobCollections.findOne(query);
+            const api = { _id: new ObjectId(id) };
+            const job = await jobCollections.findOne(api);
             res.send(job);
         })
 
@@ -134,8 +142,8 @@ async function run() {
         // show all applicant on a job
         app.get('/applicantList', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const job = await jobCollections.findOne(query);
+            const api = { _id: new ObjectId(id) };
+            const job = await jobCollections.findOne(api);
             res.send(job);
         })
 
@@ -143,14 +151,14 @@ async function run() {
         // show all saved job by job category
         app.get('/jobbycategory', async (req, res) => {
 
-            let query = {};
-            if (req.query.category) {
-                query = {
-                    category: req.query.category
+            let api = {};
+            if (req.api.category) {
+                api = {
+                    category: req.api.category
                 }
             }
-            // console.log("Category id : ", query)
-            const cursor = jobCollections.find(query);
+            // console.log("Category id : ", api)
+            const cursor = jobCollections.find(api);
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -159,30 +167,30 @@ async function run() {
         // search job by jobTitle saved job by job category
         app.get('/jobByTitle', async (req, res) => {
 
-            let query = {};
-            if (req.query.jobTitle) {
-                query = {
-                    jobTitle: req.query.jobTitle
+            let api = {};
+            if (req.api.jobTitle) {
+                api = {
+                    jobTitle: req.api.jobTitle
                 }
             }
-            // console.log("Category id : ", query)
-            const cursor = jobCollections.find(query);
+            // console.log("Category id : ", api)
+            const cursor = jobCollections.find(api);
             const result = await cursor.toArray();
             res.send(result);
         })
 
 
         app.get('/jobapplicant', async (req, res) => {
-            let query = {};
-            if (req.query.jobId) {
-                query = {
-                    jobId: req.query.jobId
+            let api = {};
+            if (req.api.jobId) {
+                api = {
+                    jobId: req.api.jobId
                 }
             }
 
-            // console.log("query jobId  : ", query)
+            // console.log("api jobId  : ", api)
 
-            const cursor = applicationCollections.find(query);
+            const cursor = applicationCollections.find(api);
             // .sort({ reviewPostDate: -1 });
             const result = await cursor.toArray();
             res.send(result);
@@ -190,41 +198,41 @@ async function run() {
 
 
         app.get('/categoryJobs', async (req, res) => {
-            const category = req.query.category;
+            const category = req.api.category;
 
-            const query = { category: category };
-            const jobs = await jobCollections.find(query).toArray();
+            const api = { category: category };
+            const jobs = await jobCollections.find(api).toArray();
             res.send(jobs);
         })
 
 
 
 
-        // // query to delete a Job
-        // app.delete('/jobs/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) }
-        //     const result = await jobCollections.deleteOne(query);
-        //     res.send(result);
-        //     // console.log('trying to delete', id);
-        // });
+        // api to delete a saved Job
+        app.delete('/savedjob/:id', async (req, res) => {
+            const id = req.params.id;
+            const api = { _id: new ObjectId(id) }
+            const result = await savedJobCollections.deleteOne(api);
+            res.send(result);
+            // console.log('trying to delete', id);
+        });
 
-        //////////////////////////// job Post Query Section End//////////////////////////////////////////////
-
-
+        //////////////////////////// job Post api Section End//////////////////////////////////////////////
 
 
-        //////////////////////////// job Application Query Section Start //////////////////////////////////////////////  
+
+
+        //////////////////////////// job Application api Section Start //////////////////////////////////////////////  
 
 
         // save application on database
         app.post('/applications', async (req, res) => {
             const application = req.body;
-            const query = {
+            const api = {
                 jobId: application.jobId,
                 jobSeekerEmail: application.jobSeekerEmail,
             }
-            const alreadyApplied = await applicationCollections.find(query).toArray();
+            const alreadyApplied = await applicationCollections.find(api).toArray();
 
             if (alreadyApplied.length) {
                 const message = `You have already applied on this job${application.jobTitle}`;
@@ -236,10 +244,10 @@ async function run() {
         })
 
 
-        // query to show all application
+        // api to show all application
         app.get('/applications', async (req, res) => {
-            const query = {};
-            const cursor = applicationCollections.find(query).sort({ _id: -1 })
+            const api = {};
+            const cursor = applicationCollections.find(api).sort({ _id: -1 })
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -250,47 +258,47 @@ async function run() {
 
             // const decoded = req.decoded;
             // // console.log('inside orders api : ', decoded);
-            // if (decoded.email !== req.query.email) {
+            // if (decoded.email !== req.api.email) {
             //     res.status(403).send({ message: 'Forbidden Access' })
             // }
 
-            let query = {};
-            if (req.query.email) {
-                query = {
-                    email: req.query.email
+            let api = {};
+            if (req.api.email) {
+                api = {
+                    email: req.api.email
                 }
             }
-            const cursor = applicationCollections.find(query).sort({ applicationDate: -1 });
+            const cursor = applicationCollections.find(api).sort({ applicationDate: -1 });
             const result = await cursor.toArray();
             res.send(result);
         })
 
 
-        // query to show already applied application
+        // api to show already applied application
         app.get('/appliedApplications', async (req, res) => {
-            const userEmail = req.query.email;
-            const jobId = req.query.email;
-            const query = { email }
-            const user = await applicationCollections.findOne(query);
+            const userEmail = req.api.email;
+            const jobId = req.api.email;
+            const api = { email }
+            const user = await applicationCollections.findOne(api);
             res.send({ isAdmin: user?.role === 'admin' });
         })
 
-        //////////////////////////// job Application Query Section End //////////////////////////////////////////////
+        //////////////////////////// job Application api Section End //////////////////////////////////////////////
 
 
 
 
-        //////////////////////////// Saved Job Query Section Start//////////////////////////////////////////////        
-        // query to save a jab as favorite
+        //////////////////////////// Saved Job api Section Start//////////////////////////////////////////////        
+        // api to save a jab as favorite
         app.post('/savedjobs', async (req, res) => {
             const savedjob = req.body;
 
-            const query = {
+            const api = {
                 jobId: savedjob.jobId,
                 email: savedjob.email,
             }
 
-            const alreadySaved = await savedJobCollections.find(query).toArray();
+            const alreadySaved = await savedJobCollections.find(api).toArray();
 
 
             if (alreadySaved.length) {
@@ -298,16 +306,14 @@ async function run() {
                 return res.send({ acknowledged: false, message })
             }
 
-
-
             result = await savedJobCollections.insertOne(savedjob);
             res.send(result);
         })
 
 
         app.get('/savedjobs', async (req, res) => {
-            const query = {};
-            const result = await savedJobCollections.find(query).toArray();
+            const api = {};
+            const result = await savedJobCollections.find(api).toArray();
             res.send(result);
         })
 
@@ -315,65 +321,65 @@ async function run() {
         // show all saved job by job seeker email
         app.get('/jobseekersavedjobs', async (req, res) => {
 
-            let query = {};
-            if (req.query.jobSeekerEmail) {
-                query = {
-                    jobSeekerEmail: req.query.jobSeekerEmail
+            let api = {};
+            if (req.api.jobSeekerEmail) {
+                api = {
+                    jobSeekerEmail: req.api.jobSeekerEmail
                 }
             }
-            const cursor = savedJobCollections.find(query).sort({ savedDate: -1 });
+            const cursor = savedJobCollections.find(api).sort({ savedDate: -1 });
             const result = await cursor.toArray();
             res.send(result);
         })
-        //////////////////////////// Saved Job Query Section End//////////////////////////////////////////////
+        //////////////////////////// Saved Job api Section End//////////////////////////////////////////////
 
 
 
 
-        //////////////////////////// User query Section start //////////////////////////////////////////////
+        //////////////////////////// User api Section start //////////////////////////////////////////////
 
-        // query to save a new user
+        // api to save a new user
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await userCollections.insertOne(user);
             res.send(result);
         });
 
-        // query to show all users
+        // api to show all users
         app.get('/users', async (req, res) => {
-            const query = {};
-            const cursor = userCollections.find(query);
+            const api = {};
+            const cursor = userCollections.find(api);
             const users = await cursor.toArray();
             res.send(users);
         });
 
-        // query to show all employer
+        // api to show all employer
         app.get('/employers', async (req, res) => {
-            const query = { userType: { $eq: "employer" } };
-            const cursor = userCollections.find(query);
+            const api = { userType: { $eq: "employer" } };
+            const cursor = userCollections.find(api);
             const employers = await cursor.toArray();
             res.send(employers);
         });
 
-        // query to show all jobseeker
+        // api to show all jobseeker
         app.get('/jobseekers', async (req, res) => {
-            const query = { userType: { $eq: "jobseeker" } };
-            const cursor = userCollections.find(query);
+            const api = { userType: { $eq: "jobseeker" } };
+            const cursor = userCollections.find(api);
             const jobseekers = await cursor.toArray();
             res.send(jobseekers);
         });
 
-        // query to show a user by id
+        // api to show a user by id
         app.get('/users/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const user = await userCollections.findOne(query);
+            const api = { _id: new ObjectId(id) };
+            const user = await userCollections.findOne(api);
 
             res.send(user);
         })
 
 
-        // query to add a user as admin
+        // api to add a user as admin
         app.put('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
             const filter = { email }
@@ -388,33 +394,33 @@ async function run() {
         })
 
 
-        // query to find admin user by email
+        // api to find admin user by email
         app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email }
-            const user = await userCollections.findOne(query);
+            const api = { email }
+            const user = await userCollections.findOne(api);
             res.send({ isAdmin: user?.role === 'admin' });
         })
 
 
-        // query to find a employer user by email
+        // api to find a employer user by email
         app.get('/users/employer/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email }
-            const user = await userCollections.findOne(query);
+            const api = { email }
+            const user = await userCollections.findOne(api);
             res.send({ isEmployer: user?.userType === "employer" });
         })
 
 
-        // query to find jobseeker user by email
+        // api to find jobseeker user by email
         app.get('/users/jobseeker/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email }
-            const user = await userCollections.findOne(query);
+            const api = { email }
+            const user = await userCollections.findOne(api);
             res.send({ isJobSeeker: user?.userType === "jobseeker" });
         })
 
-        // query to update a user
+        // api to update a user
         app.put('/users/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -432,23 +438,23 @@ async function run() {
         })
 
 
-        // query to delete a user
+        // api to delete a user
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await userCollections.deleteOne(query);
+            const api = { _id: new ObjectId(id) }
+            const result = await userCollections.deleteOne(api);
             res.send(result);
             // console.log('trying to delete', id);
         });
 
-        //////////////////////////// User query Section end //////////////////////////////////////////////
+        //////////////////////////// User api Section end //////////////////////////////////////////////
 
 
 
 
-        //////////////////////////// Employer Query Section Start //////////////////////////////////////////////
+        //////////////////////////// Employer api Section Start //////////////////////////////////////////////
 
-        // query to save a employee Profile
+        // api to save a employee Profile
         app.post('/emplyerProfile', async (req, res) => {
             const employer = req.body;
             const result = await employerCollections.insertOne(employer);
@@ -456,11 +462,11 @@ async function run() {
         });
 
 
-        // query to show a employer by emailid
+        // api to show a employer by emailid
         app.get('/employer/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email };
-            const employer = await employerCollections.findOne(query);
+            const api = { email };
+            const employer = await employerCollections.findOne(api);
             res.send(employer);
         })
 
@@ -468,62 +474,144 @@ async function run() {
         // show all application by job seeker email
         app.get('/postedjob', async (req, res) => {
 
-            let query = {};
-            if (req.query.email) {
-                query = {
-                    email: req.query.email
+            let api = {};
+            if (req.api.email) {
+                api = {
+                    email: req.api.email
                 }
             }
-            const cursor = jobCollections.find(query).sort({ postDate: -1 });
+            const cursor = jobCollections.find(api).sort({ postDate: -1 });
             // .sort({ applicationDate: -1 });
             const result = await cursor.toArray();
             res.send(result);
         })
 
 
-        // query to find is employer profile activated or not
+        // api to find is employer profile activated or not
         app.get('/employers/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email }
-            const employer = await employerCollections.findOne(query);
+            const api = { email }
+            const employer = await employerCollections.findOne(api);
             res.send({ isEmployerActivated: employer?.email === email });
         })
 
-        //////////////////////////// Employer Query Section End //////////////////////////////////////////////
+        //////////////////////////// Employer api Section End //////////////////////////////////////////////
 
 
 
-        //////////////////////////// Job Seeker Query Section Start //////////////////////////////////////////////     
+        //////////////////////////// Job Seeker api Section Start //////////////////////////////////////////////     
 
-        // query to save a jobseeker Profile
+        // api to save a jobseeker Profile
         app.post('/jobseekerProfile', async (req, res) => {
             const jobseeker = req.body;
             const result = await jobseekerCollections.insertOne(jobseeker);
             res.send(result);
         });
 
-        // query to show a jobseeker by email
+
+        // api to show a jobseeker by email
         app.get('/jobseeker/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email };
-            const jobseeker = await jobseekerCollections.findOne(query);
+            const api = { email };
+            const jobseeker = await jobseekerCollections.findOne(api);
             res.send(jobseeker);
         })
-        //////////////////////////// Job Seeker Query Section End //////////////////////////////////////////////
+
+
+        // api to save a employee's Personal Details
+        app.post('/employeesPersonal', async (req, res) => {
+            const personal = req.body;
+            const result = await employeePersonalDetails.insertOne(personal);
+            res.send(result);
+        });
+
+
+        // api to show employee's Personal Details Data
+        app.get('/employeesPersonal', async (req, res) => {
+            const query = {};
+            const result = await employeePersonalDetails.find(query).toArray();
+            res.send(result);
+        });
+
+
+        // api to save a employee's Experience Data
+        app.post('/employeesExperiences', async (req, res) => {
+            const experience = req.body;
+            const result = await employeeExperiences.insertOne(experience);
+            res.send(result);
+        });
+
+
+        // api to show employee's Experience Data
+        app.get('/employeesExperiences', async (req, res) => {
+            const query = {};
+            const result = await employeeExperiences.find(query).toArray();
+            res.send(result);
+        });
+
+
+        // api to save a employee's Academic and Training Data
+        app.post('/employeesAcademics', async (req, res) => {
+            const academic = req.body;
+            const result = await employeeAcademics.insertOne(academic);
+            res.send(result);
+        });
+
+
+        // api to show employee's Academic and Training Data
+        app.get('/employeesAcademics', async (req, res) => {
+            const query = {};
+            const result = await employeeAcademics.find(query).toArray();
+            res.send(result);
+        });
+
+
+        // api to save a employee's Career and Skill Data
+        app.post('/employeesCareers', async (req, res) => {
+            const academic = req.body;
+            const result = await employeeCareers.insertOne(academic);
+            res.send(result);
+        });
+
+
+        // api to show employee's Career and Skill Data
+        app.get('/employeesCareers', async (req, res) => {
+            const query = {};
+            const result = await employeeCareers.find(query).toArray();
+            res.send(result);
+        });
+
+
+        // api to save a employee's Languages and References
+        app.post('/employeesReferences', async (req, res) => {
+            const references = req.body;
+            const result = await employeeReferences.insertOne(references);
+            res.send(result);
+        });
+
+
+        // api to show employee's Languages and References
+        app.get('/employeesReferences', async (req, res) => {
+            const query = {};
+            const result = await employeeReferences.find(query).toArray();
+            res.send(result);
+        });
+        
+        //////////////////////////// Job Seeker api Section End //////////////////////////////////////////////
 
 
 
-        //////////////////////////// Subscriber Query Section Start ////////////////////////////////////////////
+        //////////////////////////// Subscriber api Section Start ////////////////////////////////////////////
 
-        // query to save a suscriber 
+        // api to save a suscriber 
         app.post('/subscribers', async (req, res) => {
             const subscriber = req.body;
 
-            const query = {
+            const api = {
                 subsEmail: subscriber.subsEmail,
             }
 
-            const alreadySubscribed = await subscriberCollections.find(query).toArray();
+            const alreadySubscribed = await subscriberCollections.find(api).toArray();
 
 
             if (alreadySubscribed.length) {
@@ -535,14 +623,14 @@ async function run() {
             res.send(result);
         })
 
-        // query to show all suscriber 
+        // api to show all suscriber 
         app.get('/subscribers', async (req, res) => {
-            const query = {};
-            const result = await subscriberCollections.find(query).toArray();
+            const api = {};
+            const result = await subscriberCollections.find(api).toArray();
             res.send(result);
         })
 
-        // query to delete a subscriber
+        // api to delete a subscriber
         app.delete('/subscribers/:id', async (req, res) => {
             const id = req.params.id;
             // console.log('Want to delete the ID', id)
@@ -552,7 +640,7 @@ async function run() {
         })
 
 
-        //////////////////////////// Subscriber Query Section End //////////////////////////////////////////////
+        //////////////////////////// Subscriber api Section End //////////////////////////////////////////////
 
 
     }
