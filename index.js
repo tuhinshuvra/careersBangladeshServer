@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { api } = require('express');
+const { query } = require('express');
 require('dotenv').config();
 
 const app = express();
@@ -93,7 +93,7 @@ async function run() {
         // api to search  Job by search field
         app.get('/jobSearch', async (req, res) => {
             const search = req.query.search;
-            console.log("search data : ", search)
+            // console.log("search data : ", search)
             let query = {}
 
             if (search.length) {
@@ -112,7 +112,7 @@ async function run() {
         // api to show Job 
         app.get('/jobSearchHome/:search', async (req, res) => {
             const search = req.params.search;
-            console.log("search data : ", search)
+            // console.log("search data : ", search)
             let query = {}
 
             if (search.length) {
@@ -293,7 +293,7 @@ async function run() {
         app.post('/savedjobs', async (req, res) => {
             const savedjob = req.body;
 
-            const api = {
+            const query = {
                 jobId: savedjob.jobId,
                 email: savedjob.email,
             }
@@ -520,8 +520,20 @@ async function run() {
 
         // api to save a employee's Personal Details
         app.post('/employeesPersonal', async (req, res) => {
-            const personal = req.body;
-            const result = await employeePersonalDetails.insertOne(personal);
+            const savedData = req.body;
+
+            const query = {
+                email: savedData.email,
+            }
+
+            const alreadySaved = await employeePersonalDetails.find(query).toArray();
+
+            if (alreadySaved.length) {
+                const message = `Personal Details data of  this person already saved`;
+                return res.send({ acknowledged: false, message })
+            }
+
+            const result = await employeePersonalDetails.insertOne(savedData);
             res.send(result);
         });
 
@@ -536,8 +548,22 @@ async function run() {
 
         // api to save a employee's Experience Data
         app.post('/employeesExperiences', async (req, res) => {
-            const experience = req.body;
-            const result = await employeeExperiences.insertOne(experience);
+            const reqestedData = req.body;
+
+
+            const query = {
+                email: reqestedData.email,
+            }
+
+            const alreadySaved = await employeeExperiences.find(query).toArray();
+
+            if (alreadySaved.length) {
+                const message = `Experience data of this person already saved`;
+                return res.send({ acknowledged: false, message })
+            }
+
+
+            const result = await employeeExperiences.insertOne(reqestedData);
             res.send(result);
         });
 
@@ -552,8 +578,21 @@ async function run() {
 
         // api to save a employee's Academic and Training Data
         app.post('/employeesAcademics', async (req, res) => {
-            const academic = req.body;
-            const result = await employeeAcademics.insertOne(academic);
+            const reqestedData = req.body;
+
+            const query = {
+                email: reqestedData.email,
+            }
+
+            const alreadySaved = await employeeAcademics.find(query).toArray();
+
+            if (alreadySaved.length) {
+                const message = `Academic and Training data of this person already saved`;
+                return res.send({ acknowledged: false, message })
+            }
+
+
+            const result = await employeeAcademics.insertOne(reqestedData);
             res.send(result);
         });
 
@@ -568,8 +607,20 @@ async function run() {
 
         // api to save a employee's Career and Skill Data
         app.post('/employeesCareers', async (req, res) => {
-            const academic = req.body;
-            const result = await employeeCareers.insertOne(academic);
+            const dataList = req.body;
+
+            const query = {
+                email: dataList.email,
+            }
+
+            const alreadySaved = await employeeCareers.find(query).toArray();
+
+            if (alreadySaved.length) {
+                const message = `Career and Skill Data of this person already saved`;
+                return res.send({ acknowledged: false, message })
+            }
+
+            const result = await employeeCareers.insertOne(dataList);
             res.send(result);
         });
 
@@ -584,8 +635,20 @@ async function run() {
 
         // api to save a employee's Languages and References
         app.post('/employeesReferences', async (req, res) => {
-            const references = req.body;
-            const result = await employeeReferences.insertOne(references);
+            const dataList = req.body;
+
+            const query = {
+                email: dataList.email,
+            }
+
+            const alreadySaved = await employeeReferences.find(query).toArray();
+
+            if (alreadySaved.length) {
+                const message = `Languages and References data of this person already saved`;
+                return res.send({ acknowledged: false, message })
+            }
+
+            const result = await employeeReferences.insertOne(dataList);
             res.send(result);
         });
 
