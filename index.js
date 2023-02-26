@@ -660,6 +660,31 @@ async function run() {
             res.send(result);
         });
 
+
+        // aggregation
+        app.get('/employeraggre', async (req, res) => {
+            // const jobseeker = { userType: { $eq: "jobseeker" } };
+            // const mail = req.query.mail;
+            const mail = 'imran@gmail.com';
+
+            const employerapply = await applicationCollections.aggregate([
+                {
+                    $lookup: {
+                        from: 'jobseeker',
+                        localField: 'jobSeekerEmail',
+                        foreignField: 'email',
+                        pipeline: [
+                            { $match: { $expr: { $eq: ['$jobSeekerEmail', mail] } } }
+                        ],
+                        as: 'employeraggree'
+                    }
+                }
+            ]).toArray();
+
+            res.send(employerapply);
+        });
+
+
         //////////////////////////// Job Seeker api Section End //////////////////////////////////////////////
 
 
