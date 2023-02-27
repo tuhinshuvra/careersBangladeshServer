@@ -258,12 +258,12 @@ async function run() {
 
             // const decoded = req.decoded;
             // // console.log('inside orders api : ', decoded);
-            // if (decoded.email !== req.api.email) {
+            // if (decoded.email !== req.query.email) {
             //     res.status(403).send({ message: 'Forbidden Access' })
             // }
 
             let query = {};
-            if (req.api.email) {
+            if (req.query.email) {
                 query = {
                     email: req.query.email
                 }
@@ -661,29 +661,130 @@ async function run() {
         });
 
 
-        // aggregation
-        app.get('/employeraggre', async (req, res) => {
-            // const jobseeker = { userType: { $eq: "jobseeker" } };
-            // const mail = req.query.mail;
-            const mail = 'imran@gmail.com';
 
-            const employerapply = await applicationCollections.aggregate([
+        // aggregation of employees all primary data collections
+        // app.get('/employeesAggregatedData', async (req, res) => {
+        app.get('/employeesAggregatedData/:email', async (req, res) => {
+            // const email = 'salam@gmail.com';
+            const email = req.params.email;
+
+            const employeesData = await employeePersonalDetails.aggregate([
+
+                { $match: { email: { '$eq': email } } },
+
                 {
                     $lookup: {
-                        from: 'jobseeker',
-                        localField: 'jobSeekerEmail',
+                        from: 'empExperiences',
+                        localField: 'email',
                         foreignField: 'email',
                         pipeline: [
-                            { $match: { $expr: { $eq: ['$jobSeekerEmail', mail] } } }
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$email", email]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    email: 0,                                    
+                                }
+                            },
                         ],
-                        as: 'employeraggree'
-                    }
-                }
+                        as: 'empAgrreExperience'
+                    },
+                },
+                { $unwind: "$empAgrreExperience" },
+
+
+                {
+                    $lookup: {
+                        from: 'empAcademics',
+                        localField: 'email',
+                        foreignField: 'email',
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$email", email]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    email: 0,
+                                    name: 0,
+                                }
+                            },
+                        ],
+                        as: 'empAggreAcademics'
+                    },
+                },
+                { $unwind: "$empAggreAcademics" },
+
+                
+                {
+                    $lookup: {
+                        from: 'empCareers',
+                        localField: 'email',
+                        foreignField: 'email',
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$email", email]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    email: 0,
+                                    name: 0,
+                                }
+                            },
+                        ],
+                        as: 'empAggreCareers'
+                    },
+                },
+                { $unwind: "$empAggreCareers" },
+
+                {
+                    $lookup: {
+                        from: 'empReferences',
+                        localField: 'email',
+                        foreignField: 'email',
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$email", email]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 0,
+                                    email: 0,
+                                    name: 0,
+
+                                }
+                            },
+                        ],
+                        as: 'empAggreReferences'
+                    },
+                },
+                { $unwind: "$empAggreReferences" },
+
+
+
             ]).toArray();
 
-            res.send(employerapply);
+            res.send(employeesData);
         });
-
+        // db.vehicledetails.aggregate([{$unwind : "$model_year" }]).pretty()
 
         //////////////////////////// Job Seeker api Section End //////////////////////////////////////////////
 
@@ -711,12 +812,14 @@ async function run() {
             res.send(result);
         })
 
+
         // api to show all suscriber 
         app.get('/subscribers', async (req, res) => {
             const query = {};
             const result = await subscriberCollections.find(query).toArray();
             res.send(result);
         })
+
 
         // api to delete a subscriber
         app.delete('/subscribers/:id', async (req, res) => {
