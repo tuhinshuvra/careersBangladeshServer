@@ -663,10 +663,10 @@ async function run() {
 
 
         // aggregation of employees all primary data collections
-        // app.get('/employeesAggregatedData', async (req, res) => {
-        app.get('/employeesAggregatedData/:email', async (req, res) => {
-            // const email = 'salam@gmail.com';
-            const email = req.params.email;
+        app.get('/employeesAggregatedData', async (req, res) => {
+        // app.get('/employeesAggregatedData/:email', async (req, res) => {
+            const email = 'salam@gmail.com';
+            // const email = req.params.email;
 
             const employeesData = await employeePersonalDetails.aggregate([
 
@@ -724,7 +724,7 @@ async function run() {
                 },
                 { $unwind: "$empAggreAcademics" },
 
-                
+
                 {
                     $lookup: {
                         from: 'empCareers',
