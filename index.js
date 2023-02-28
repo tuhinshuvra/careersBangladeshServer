@@ -545,6 +545,15 @@ async function run() {
             res.send(result);
         });
 
+        // api to show employee's Personal Details Data by id
+        app.get('/employeesPersonal/:id', async (req, res) => {
+            const id = req.params.id;
+            const objectedId = { _id: new ObjectId(id) }
+
+            const result = await employeePersonalDetails.findOne(objectedId).toArray();
+            res.send(result);
+        });
+
 
         // api to save a employee's Experience Data
         app.post('/employeesExperiences', async (req, res) => {
@@ -688,7 +697,7 @@ async function run() {
                             {
                                 $project: {
                                     _id: 0,
-                                    email: 0,                                    
+                                    email: 0,
                                 }
                             },
                         ],
