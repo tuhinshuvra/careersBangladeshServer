@@ -546,13 +546,111 @@ async function run() {
         });
 
         // api to show employee's Personal Details Data by id
-        app.get('/employeesPersonal/:id', async (req, res) => {
-            const id = req.params.id;
-            const objectedId = { _id: new ObjectId(id) }
+        app.get('/employeesPersonal/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            // console.log("employeesPersonal email : ", email)
 
-            const result = await employeePersonalDetails.findOne(objectedId).toArray();
+            const result = await employeePersonalDetails.findOne(query);
+            // console.log("employeesPersonal result : ", result)
             res.send(result);
         });
+
+
+        // api to update jobseeker personal data
+        app.put('/employeesPersonal/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const jobSeeker = req.body;
+
+            console.log("jobSeeker Updated Data : ", jobSeeker)
+            const options = { upsert: true };
+
+            const updatedData = {
+                $set: {
+
+                    name: jobSeeker.name,
+                    fathersName: jobSeeker.fathersName,
+                    mothersName: jobSeeker.mothersName,
+                    phone: jobSeeker.phone,
+                    birthDate: jobSeeker.birthDate,
+                    nationality: jobSeeker.nationality,
+                    nationalId: jobSeeker.nationalId,
+                    gender: jobSeeker.gender,
+                    religion: jobSeeker.religion,
+                    maritalStatus: jobSeeker.maritalStatus,
+                    image: jobSeeker.image,
+                    permanentAddress: jobSeeker.permanentAddress,
+                    presentAddress: jobSeeker.presentAddress,
+                    careerObjective: jobSeeker.careerObjective,
+                }
+            }
+
+            const result = await employeePersonalDetails.updateOne(filter, updatedData, options)
+            res.send(result);
+        })
+
+
+        // api to show employee's employeesExpriences Data by id
+        app.get('/employeesExpriences/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            // console.log("employeesExpriences email : ", email)
+
+            const result = await employeeExperiences.findOne(query);
+            // console.log("employeesExpriences result : ", result)
+            res.send(result);
+        });
+
+
+
+        // api to update employee's employeesExpriences Data by id
+
+        app.put('/jobseekersExperiences/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const jobSeeker = req.body;
+            console.log("jobSeeker Experience Data", jobSeeker);
+
+            const options = { upsert: true };
+
+            const updatedData = {
+                $set: {
+                    expOneCompanayName: jobSeeker.expOneCompanayName,
+                    expOneCompanayBusiness: jobSeeker.expOneCompanayBusiness,
+                    expOneDepartment: jobSeeker.expOneDepartment,
+                    expOneDesignation: jobSeeker.expOneDesignation,
+                    exprOneResp: jobSeeker.exprOneResp,
+                    exprOneExpertise: jobSeeker.exprOneExpertise,
+                    expOneFrom: jobSeeker.expOneFrom,
+                    expOneTo: jobSeeker.expOneTo,
+                    exprCompOneAddress: jobSeeker.exprCompOneAddress,
+
+                    expTwoCompanayBusiness: jobSeeker.expTwoCompanayBusiness,
+                    expTwoCompanayName: jobSeeker.expTwoCompanayName,
+                    expTwoDepartment: jobSeeker.expTwoDepartment,
+                    expTwoDesignation: jobSeeker.expTwoDesignation,
+                    expTwoFrom: jobSeeker.expTwoFrom,
+                    expTwoTo: jobSeeker.expTwoTo,
+                    exprTwoExpertise: jobSeeker.exprTwoExpertise,
+                    exprTwoResp: jobSeeker.exprTwoResp,
+                    exprCompTwoAddress: jobSeeker.exprCompTwoAddress,
+                }
+            }
+
+            const result = employeeExperiences.updateOne(filter, updatedData, options);
+            res.send(result);
+        })
+
+
+        // api to show employee's jobseeker academic and training Data by id
+        app.get('/employeesAcademics/:email', (req, res) => {
+            const email = req.res.email;
+            const query = { email }
+
+            console.log("Job Seeker Academics Data", email);
+
+        })
 
 
         // api to save a employee's Experience Data
