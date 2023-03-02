@@ -595,10 +595,7 @@ async function run() {
         app.get('/employeesExpriences/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            // console.log("employeesExpriences email : ", email)
-
             const result = await employeeExperiences.findOne(query);
-            // console.log("employeesExpriences result : ", result)
             res.send(result);
         });
 
@@ -643,13 +640,42 @@ async function run() {
         })
 
 
-        // api to show employee's jobseeker academic and training Data by id
-        app.get('/employeesAcademics/:email', (req, res) => {
-            const email = req.res.email;
+        // api to show  jobseeker academic and training Data by id
+        app.get('/employeesAcademics/:email', async (req, res) => {
+            const email = req.params.email;
             const query = { email }
 
-            console.log("Job Seeker Academics Data", email);
+            console.log("Job Seeker Academics Data Email", email);
+            const result = await employeeAcademics.findOne(query);
+            res.send(result);
+        })
 
+
+        // app.get('/employeesExpriences/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = { email }
+        //     const result = await employeeExperiences.findOne(query);
+        //     res.send(result);
+        // });
+
+        // api to show  Careers and Skill Data by id
+        app.get('/employeesCareers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+
+            // console.log("Job Seeker Academics Data", email);
+            const result = await employeeCareers.findOne(query);
+            res.send(result);
+        })
+
+        // api to show  Languages and References Data by id
+        app.get('/employeesReferences/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+
+            // console.log("Job Seeker Academics Data", email);
+            const result = await employeeReferences.findOne(query);
+            res.send(result);
         })
 
 
