@@ -470,6 +470,14 @@ async function run() {
             res.send(employer);
         })
 
+        // // api to show a employer by id
+        // app.get('/employer/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const objectedId = { _id: ObjectId(id) };
+        //     const employer = await employerCollections.findOne(objectedId);
+        //     res.send(employer);
+        // })
+
 
         // show all application by job seeker email
         app.get('/postedjob', async (req, res) => {
