@@ -111,7 +111,12 @@ async function run() {
     // api to search  Job by search field
     app.get("/jobSearch", async (req, res) => {
       const search = req.query.search;
-      // console.log("search data : ", search)
+      console.log("search data : ", search);
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      let skipSize = page * size;
+      const count = await jobCollections.count();
+      console.log("count", count);
       let query = {};
 
       if (search?.length) {
@@ -121,10 +126,14 @@ async function run() {
           },
         };
       }
-
-      const cursor = jobCollections.find(query).sort({ postDate: -1 });
+      console.log("search?.length", search?.length);
+      const cursor = jobCollections
+        .find(query)
+        .sort({ postDate: -1 })
+        .skip(skipSize)
+        .limit(size);
       const job = await cursor.toArray();
-      res.send(job);
+      res.send({ count, job });
     });
 
     // api to show Job
