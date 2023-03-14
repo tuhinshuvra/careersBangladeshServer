@@ -114,7 +114,7 @@ async function run() {
       // console.log("search data : ", search)
       let query = {};
 
-      if (search.length) {
+      if (search?.length) {
         query = {
           $text: {
             $search: search,
@@ -128,21 +128,46 @@ async function run() {
     });
 
     // api to show Job
-    app.get("/jobSearchHome/:search", async (req, res) => {
-      const search = req.params.search;
-      // console.log("search data : ", search)
-      let query = {};
+    // app.get("/jobSearchHome/:search", async (req, res) => {
+    //   const search = req.params.search;
+    //   // console.log("search data : ", search)
+    //   let query = {};
 
-      if (search.length) {
-        query = {
-          $text: {
-            $search: search,
-          },
-        };
-      }
+    //   if (search.length) {
+    //     query = {
+    //       $text: {
+    //         $search: search,
+    //       },
+    //     };
+    //   }
 
-      const cursor = jobCollections.find(query).sort({ postDate: -1 });
-      const job = await cursor.toArray();
+    //   const cursor = jobCollections.find(query).sort({ postDate: -1 });
+    //   const job = await cursor.toArray();
+    //   res.send(job);
+    // });
+
+    // api to search  Job by search field
+    app.get("/jobSearch/:search/:search2/:search3", async (req, res) => {
+      console.log("req.params1 : ", req.params.search);
+      console.log("req.params2 : ", req.params.search2);
+      console.log("req.params2 : ", req.params.search3);
+
+      let query = jobCollections.find({
+        $or: [
+          { jobTitle: { $in: [req.params.search] } },
+          { location: { $in: [req.params.search2] } },
+          { orgaType: { $in: [req.params.search3] } },
+
+          // etc. add your other fields as well here
+        ],
+      });
+
+      //let query = jobCollections.find({ jobTitle: req.params.search });
+      const job = await query.toArray();
+      //const cursor = jobCollections.find(query).sort({ postDate: -1 });
+      console.log("queryDB:", job);
+      //const cursor = jobCollections.find(query).sort({ postDate: -1 });
+      //const job = await query.toArray();
       res.send(job);
     });
 
