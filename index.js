@@ -111,12 +111,12 @@ async function run() {
     // api to search  Job by search field
     app.get("/jobSearch", async (req, res) => {
       const search = req.query.search;
-      console.log("search data : ", search);
+      // console.log("search data : ", search);
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
       let skipSize = page * size;
       const count = await jobCollections.count();
-      console.log("count", count);
+      // console.log("count", count);
       let query = {};
 
       if (search?.length) {
@@ -126,7 +126,7 @@ async function run() {
           },
         };
       }
-      console.log("search?.length", search?.length);
+      // console.log("search?.length", search?.length);
       const cursor = jobCollections
         .find(query)
         .sort({ postDate: -1 })
@@ -157,9 +157,9 @@ async function run() {
 
     // api to search  Job by search field
     app.get("/jobSearch/:search/:search2/:search3", async (req, res) => {
-      console.log("req.params1 : ", req.params.search);
-      console.log("req.params2 : ", req.params.search2);
-      console.log("req.params2 : ", req.params.search3);
+      // console.log("req.params1 : ", req.params.search);
+      // console.log("req.params2 : ", req.params.search2);
+      // console.log("req.params2 : ", req.params.search3);
 
       let query = jobCollections.find({
         $or: [
@@ -174,7 +174,7 @@ async function run() {
       //let query = jobCollections.find({ jobTitle: req.params.search });
       const job = await query.toArray();
       //const cursor = jobCollections.find(query).sort({ postDate: -1 });
-      console.log("queryDB:", job);
+      // console.log("queryDB:", job);
       //const cursor = jobCollections.find(query).sort({ postDate: -1 });
       //const job = await query.toArray();
       res.send(job);
@@ -350,9 +350,9 @@ async function run() {
     // show all saved job by job seeker email
     app.get("/jobseekersavedjobs", async (req, res) => {
       let query = {};
-      if (req.query.jobSeekerEmail) {
+      if (req.query.email) {
         query = {
-          jobSeekerEmail: req.query.jobSeekerEmail,
+          email: req.query.email,
         };
       }
       const cursor = savedJobCollections.find(query).sort({ savedDate: -1 });
@@ -479,8 +479,8 @@ async function run() {
 
     //////////////////////////// Employer api Section Start //////////////////////////////////////////////
 
-    // api to save a employee Profile
-    app.post("/emplyerProfile", async (req, res) => {
+    // api to save a employer Profile
+    app.post("/employerProfile", async (req, res) => {
       const employer = req.body;
       const result = await employerCollections.insertOne(employer);
       res.send(result);
@@ -583,7 +583,7 @@ async function run() {
     });
 
     // api to save a jobseekers's Personal Details
-    app.post("/employeesPersonal", async (req, res) => {
+    app.post("/jobSeekersPersonal", async (req, res) => {
       const savedData = req.body;
 
       const query = {
@@ -604,30 +604,28 @@ async function run() {
     });
 
     // api to show jobseekers's Personal Details Data
-    app.get("/employeesPersonal", async (req, res) => {
+    app.get("/jobSeekersPersonal", async (req, res) => {
       const query = {};
       const result = await jobSeekersPersonalDetails.find(query).toArray();
       res.send(result);
     });
 
     // api to show jobseekers's Personal Details Data by id
-    app.get("/employeesPersonal/:email", async (req, res) => {
+    app.get("/jobSeekersPersonal/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
-      // console.log("employeesPersonal email : ", email)
 
       const result = await jobSeekersPersonalDetails.findOne(query);
-      // console.log("employeesPersonal result : ", result)
       res.send(result);
     });
 
     // api to update jobseekers personal data
-    app.put("/employeesPersonal/:id", async (req, res) => {
+    app.put("/jobSeekersPersonal/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const jobSeeker = req.body;
 
-      console.log("jobSeeker Updated Data : ", jobSeeker);
+      // console.log("jobSeeker Updated Data : ", jobSeeker);
       const options = { upsert: true };
 
       const updatedData = {
@@ -657,17 +655,17 @@ async function run() {
       res.send(result);
     });
 
-    // api to show jobseekers's employeesExpriences Data by id
-    app.get("/employeesExpriences/:email", async (req, res) => {
+    // api to show jobseekers's Expriences Data by id
+    app.get("/jobSeekersExpriences/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
       const result = await jobSeekersExperiences.findOne(query);
       res.send(result);
     });
 
-    // api to update jobseekers's employeesExpriences Data by id
+    // api to update jobseekers's Expriences Data by id
 
-    app.put("/jobseekersExperiences/:id", async (req, res) => {
+    app.put("/jobSeekersExperiences/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const jobSeeker = req.body;
@@ -786,7 +784,7 @@ async function run() {
     });
 
     // api to show jobseekrs  Careers and Skill Data by id
-    app.get("/employeesCareers/:email", async (req, res) => {
+    app.get("/jobSeekersCareers/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
 
@@ -840,7 +838,7 @@ async function run() {
     });
 
     // api to show  Languages and References Data by id
-    app.get("/employeesReferences/:email", async (req, res) => {
+    app.get("/jobSeekersReferences/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
 
@@ -894,7 +892,7 @@ async function run() {
     });
 
     // api to save a jobseeker's Experience Data
-    app.post("/employeesExperiences", async (req, res) => {
+    app.post("/jobSeekersExperiences", async (req, res) => {
       const reqestedData = req.body;
 
       const query = {
@@ -913,14 +911,14 @@ async function run() {
     });
 
     // api to show jobseeker's Experience Data
-    app.get("/employeesExperiences", async (req, res) => {
+    app.get("/jobSeekersExperiences", async (req, res) => {
       const query = {};
       const result = await jobSeekersExperiences.find(query).toArray();
       res.send(result);
     });
 
     // api to save a jobseeker's Academic and Training Data
-    app.post("/employeesAcademics", async (req, res) => {
+    app.post("/jobSeekersAcademics", async (req, res) => {
       const reqestedData = req.body;
 
       const query = {
@@ -939,14 +937,14 @@ async function run() {
     });
 
     // api to show jobseeker's Academic and Training Data
-    app.get("/employeesAcademics", async (req, res) => {
+    app.get("/jobSeekersAcademics", async (req, res) => {
       const query = {};
       const result = await jobSeekersAcademics.find(query).toArray();
       res.send(result);
     });
 
     // api to save a jobseeker's Career and Skill Data
-    app.post("/employeesCareers", async (req, res) => {
+    app.post("/jobSeekersCareers", async (req, res) => {
       const dataList = req.body;
 
       const query = {
@@ -965,14 +963,14 @@ async function run() {
     });
 
     // api to show jobseeker's Career and Skill Data
-    app.get("/employeesCareers", async (req, res) => {
+    app.get("/jobSeekersCareers", async (req, res) => {
       const query = {};
       const result = await jobSeekersCareers.find(query).toArray();
       res.send(result);
     });
 
     // api to save a jobseeker's Languages and References
-    app.post("/employeesReferences", async (req, res) => {
+    app.post("/jobSeekersReferences", async (req, res) => {
       const dataList = req.body;
 
       const query = {
@@ -991,15 +989,15 @@ async function run() {
     });
 
     // api to show jobseeker's Languages and References
-    app.get("/employeesReferences", async (req, res) => {
-      const query = {};
-      const result = await jobSeekersReferences.find(query).toArray();
-      res.send(result);
-    });
+    // app.get("/employeesReferences", async (req, res) => {
+    //   const query = {};
+    //   const result = await jobSeekersReferences.find(query).toArray();
+    //   res.send(result);
+    // });
 
-    // aggregation of employees all primary data collections
-    // app.get('/employeesAggregatedData', async (req, res) => {
-    app.get("/employeesAggregatedData/:email", async (req, res) => {
+    // aggregation of jobSeekers all primary data collections
+    // app.get("/employeesAggregatedData/:email", async (req, res) => {
+    app.get("/jobSeekersAllData/:email", async (req, res) => {
       // const email = 'salam@gmail.com';
       const email = req.params.email;
       // const query = { email };
@@ -1009,20 +1007,7 @@ async function run() {
       // const checkCareers = await jobSeekersCareers.find(query).toArray();
       // const checkReference = await jobSeekersReferences.find(query).toArray();
 
-      // if (checkExperience.length = 0) {
-      //     console.log('Experience data not saved yet');
-      // }
-      // else if (checkAcademics.length = 0) {
-      //     console.log('Academics data not saved yet');
-      // }
-      // else if (checkCareers.length = 0) {
-      //     console.log('Careers data not saved yet');
-      // }
-      // else if (checkReference.length = 0) {
-      //     console.log('Reference data not saved yet');
-      // }
-
-      const employeesData = await jobSeekersPersonalDetails
+      const jobSeekersData = await jobSeekersPersonalDetails
         .aggregate([
           { $match: { email: { $eq: email } } },
 
@@ -1138,7 +1123,7 @@ async function run() {
         ])
         .toArray();
 
-      res.send(employeesData);
+      res.send(jobSeekersData);
     });
     // db.vehicledetails.aggregate([{$unwind : "$model_year" }]).pretty()
 
