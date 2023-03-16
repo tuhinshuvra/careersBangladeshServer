@@ -176,7 +176,7 @@ async function run() {
         req.params.search3 === undefined
       ) {
         console.log("enter");
-       let query = jobCollections.find({});
+        let query = jobCollections.find({});
         job = await query.toArray();
         console.log("job", job);
       } else {
@@ -669,16 +669,29 @@ async function run() {
           name: jobSeeker.name,
           fathersName: jobSeeker.fathersName,
           mothersName: jobSeeker.mothersName,
+
           phone: jobSeeker.phone,
+          image: jobSeeker.image,
           birthDate: jobSeeker.birthDate,
+
           nationality: jobSeeker.nationality,
           nationalId: jobSeeker.nationalId,
+          passportNo: jobSeeker.passportNo,
+
           gender: jobSeeker.gender,
           religion: jobSeeker.religion,
           maritalStatus: jobSeeker.maritalStatus,
-          image: jobSeeker.image,
-          permanentAddress: jobSeeker.permanentAddress,
-          presentAddress: jobSeeker.presentAddress,
+
+          presentDistrict: jobSeeker.presentDistrict,
+          presentThana: jobSeeker.presentThana,
+          presentPostOffice: jobSeeker.presentPostOffice,
+          presentAddressLine2: jobSeeker.presentAddressLine2,
+
+          permanentDistrict: jobSeeker.permanentDistrict,
+          permanentThana: jobSeeker.permanentThana,
+          permanentPostOffice: jobSeeker.permanentPostOffice,
+          permanentAddressLine2: jobSeeker.permanentAddressLine2,
+
           careerObjective: jobSeeker.careerObjective,
         },
       };
