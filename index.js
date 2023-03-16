@@ -157,26 +157,62 @@ async function run() {
 
     // api to search  Job by search field
     app.get("/jobSearch/:search/:search2/:search3", async (req, res) => {
-      // console.log("req.params1 : ", req.params.search);
-      // console.log("req.params2 : ", req.params.search2);
-      // console.log("req.params2 : ", req.params.search3);
+      console.log("req.params1 : ", req.params.search);
+      console.log("req.params2 : ", req.params.search2);
+      console.log("req.params3 : ", req.params.search3);
 
-      let query = jobCollections.find({
+      /*     let query = jobCollections.find({
         $or: [
-          { jobTitle: { $in: [req.params.search] } },
-          { location: { $in: [req.params.search2] } },
-          { orgaType: { $in: [req.params.search3] } },
+          { jobTitle: { $regex: req.params.search,$options: "i" }}, // use $regex to perform a case-insensitive search
+          { location: { $regex: req.params.search,$options: "i" }},
+          {  orgaType: { $regex: req.params.search3,$options: "i" }},
+        ],
+      }); */
+      let job = [];
+
+      if (
+        req.params.search === undefined &&
+        req.params.search2 === undefined &&
+        req.params.search3 === undefined
+      ) {
+        console.log("enter");
+       let query = jobCollections.find({});
+        job = await query.toArray();
+        console.log("job", job);
+      } else {
+        let query = jobCollections.find({
+          $or: [
+            {
+              jobTitle: {
+                $regex: new RegExp("^" + req.params.search.toLowerCase(), "i"),
+              },
+            },
+            {
+              location: {
+                $regex: new RegExp("^" + req.params.search2.toLowerCase(), "i"),
+              },
+            },
+            {
+              orgaType: {
+                $regex: new RegExp("^" + req.params.search3.toLowerCase(), "i"),
+              },
+            },
+          ],
+        });
+
+        job = await query.toArray();
+      }
+
+      /*   let query = jobCollections.find({
+        $or: [
+          { jobTitle: { $in: [req.params.search.toLowerCase()] } },
+          { location: { $in: [req.params.search2.toLowerCase()] } },
+          { orgaType: { $in: [req.params.search3.toLowerCase()] } },
 
           // etc. add your other fields as well here
         ],
-      });
+      }); */
 
-      //let query = jobCollections.find({ jobTitle: req.params.search });
-      const job = await query.toArray();
-      //const cursor = jobCollections.find(query).sort({ postDate: -1 });
-      // console.log("queryDB:", job);
-      //const cursor = jobCollections.find(query).sort({ postDate: -1 });
-      //const job = await query.toArray();
       res.send(job);
     });
 
