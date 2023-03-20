@@ -102,10 +102,14 @@ async function run() {
 
     // api to show Job
     app.get("/jobs", async (req, res) => {
-      const query = {};
-      const cursor = jobCollections.find(query).sort({ postDate: -1 });
-      const job = await cursor.toArray();
-      res.send(job);
+      try {
+        const query = {};
+        const cursor = jobCollections.find(query).sort({ postDate: -1 });
+        const job = await cursor.toArray();
+        res.send(job);
+      } catch (err) {
+        res.json({ message: err });
+      }
     });
 
     // api to search  Job by search field
@@ -157,9 +161,9 @@ async function run() {
 
     // api to search  Job by search field
     app.get("/jobSearch/:search/:search2/:search3", async (req, res) => {
-      console.log("req.params1 : ", req.params.search);
-      console.log("req.params2 : ", req.params.search2);
-      console.log("req.params3 : ", req.params.search3);
+      // console.log("req.params1 : ", req.params.search);
+      // console.log("req.params2 : ", req.params.search2);
+      // console.log("req.params3 : ", req.params.search3);
 
       /*     let query = jobCollections.find({
         $or: [
@@ -474,8 +478,9 @@ async function run() {
     });
 
     // api to find jobseeker user by email
-    app.get("/users/jobseeker/:email", async (req, res) => {
+    app.get("/jobseekerUser/:email", async (req, res) => {
       const email = req.params.email;
+      // console.log("JobSeekers Email : ",email);
       const query = { email };
       const user = await userCollections.findOne(query);
       res.send({ isJobSeeker: user?.userType === "jobseeker" });
@@ -622,6 +627,7 @@ async function run() {
     app.post("/jobSeekersPersonal", async (req, res) => {
       const savedData = req.body;
 
+      
       const query = {
         email: savedData.email,
       };
