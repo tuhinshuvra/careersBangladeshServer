@@ -93,14 +93,15 @@ async function run() {
     //////////////////////////// job Category api Section End//////////////////////////////////////////////
 
     //////////////////////////// job Post api Section Start//////////////////////////////////////////////
-    // api to save a Job
+    
+    // api to save a new Job
     app.post("/jobs", async (req, res) => {
       const job = req.body;
       const result = await jobCollections.insertOne(job);
       res.send(result);
     });
 
-    // api to show Job
+    // api to show all Job
     app.get("/jobs", async (req, res) => {
       try {
         const query = {};
@@ -111,6 +112,54 @@ async function run() {
         res.json({ message: err });
       }
     });
+
+    // email,postersName,category,jobTitle,companyLogo,organization,
+    //   orgaType,location,vacancies,education,experience,companySize,postDate,deadLine,
+    //   applyStatus,employmentStatus,businessDescription,jobLevel,workPlace,jobContext,jobResponst,
+    //   salaryFrom,salaryTo,yearlyBonus,salaryReview,status,others}
+
+    // api to update  a posted job
+    app.put("/postedJobUpdate/:id",async(req,res)=>{
+      const id=req.params.id;
+      const filter={_id: new ObjectId(id)};
+      const jobUpdate= req.body;
+      // console.log(filter, "jobUpdate : ",jobUpdate);
+
+      const options={upsert:true};
+
+      const updatedJobData={
+        $set:{
+          category: jobUpdate.category,
+          jobTitle: jobUpdate.jobTitle,
+          // companyLogo: jobUpdate.companyLogo,
+          organization: jobUpdate.organization,
+          orgaType: jobUpdate.orgaType,
+          location: jobUpdate.location,
+          vacancies: jobUpdate.vacancies,
+          education: jobUpdate.education,
+          experience: jobUpdate.experience,
+          companySize: jobUpdate.companySize,
+          postDate: jobUpdate.postDate,
+          deadLine: jobUpdate.deadLine,
+          applyStatus: jobUpdate.applyStatus,
+          employmentStatus: jobUpdate.employmentStatus,
+          businessDescription: jobUpdate.businessDescription,
+          jobLevel: jobUpdate.jobLevel,
+          workPlace: jobUpdate.workPlace,
+          jobContext: jobUpdate.jobContext,
+          jobResponst: jobUpdate.jobResponst,
+          salaryFrom: jobUpdate.salaryFrom,
+          salaryTo: jobUpdate.salaryTo,
+          yearlyBonus: jobUpdate.yearlyBonus,
+          salaryReview: jobUpdate.salaryReview,
+          others: jobUpdate.others,
+          status: jobUpdate.status,
+        }
+      };
+
+      const result= await jobCollections.updateOne(filter,updatedJobData,options);
+      res.send(result);
+    })
 
     // api to search  Job by search field
     app.get("/jobSearch", async (req, res) => {
@@ -626,7 +675,6 @@ async function run() {
     // api to save a jobseekers's Personal Details
     app.post("/jobSeekersPersonal", async (req, res) => {
       const savedData = req.body;
-
       
       const query = {
         email: savedData.email,
