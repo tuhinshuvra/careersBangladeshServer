@@ -209,64 +209,30 @@ async function run() {
     // });
 
     // api to search  Job by search field
-    app.get("/jobSearch/:search/:search2/:search3", async (req, res) => {
-      // console.log("req.params1 : ", req.params.search);
-      // console.log("req.params2 : ", req.params.search2);
-      // console.log("req.params3 : ", req.params.search3);
-
-      /*     let query = jobCollections.find({
+    app.get("/homeJobSearch/:search/:search2/:search3", async (req, res) => {
+    
+    let searchData={};    
+    // console.log("Not searchData :",searchData.length);
+    
+        
+      searchData= {
         $or: [
-          { jobTitle: { $regex: req.params.search,$options: "i" }}, // use $regex to perform a case-insensitive search
-          { location: { $regex: req.params.search,$options: "i" }},
-          {  orgaType: { $regex: req.params.search3,$options: "i" }},
+          {
+            jobTitle: { $regex: new RegExp( req.params.search.toLowerCase(), "i"), },
+          },
+          {
+            location: { $regex: new RegExp(req.params.search2.toLowerCase(), "i"), },
+          },
+          {
+            orgaType: {$regex: new RegExp(req.params.search3.toLowerCase(), "i"), },
+          },
         ],
-      }); */
-      let job = [];
-
-      if (
-        req.params.search === undefined &&
-        req.params.search2 === undefined &&
-        req.params.search3 === undefined
-      ) {
-        console.log("enter");
-        let query = jobCollections.find({});
-        job = await query.toArray();
-        console.log("job", job);
-      } else {
-        let query = jobCollections.find({
-          $or: [
-            {
-              jobTitle: {
-                $regex: new RegExp("^" + req.params.search.toLowerCase(), "i"),
-              },
-            },
-            {
-              location: {
-                $regex: new RegExp("^" + req.params.search2.toLowerCase(), "i"),
-              },
-            },
-            {
-              orgaType: {
-                $regex: new RegExp("^" + req.params.search3.toLowerCase(), "i"),
-              },
-            },
-          ],
-        });
-
-        job = await query.toArray();
       }
+    
+      
+     const result = await jobCollections.find(searchData).sort({ postDate: -1 }).toArray();
 
-      /*   let query = jobCollections.find({
-        $or: [
-          { jobTitle: { $in: [req.params.search.toLowerCase()] } },
-          { location: { $in: [req.params.search2.toLowerCase()] } },
-          { orgaType: { $in: [req.params.search3.toLowerCase()] } },
-
-          // etc. add your other fields as well here
-        ],
-      }); */
-
-      res.send(job);
+      res.send(result);
     });
 
     // show a job by id
@@ -353,10 +319,12 @@ async function run() {
     // save application on database
     app.post("/applications", async (req, res) => {
       const application = req.body;
+      
       const query = {
         jobId: application.jobId,
         jobSeekerEmail: application.jobSeekerEmail,
       };
+      
       const alreadyApplied = await applicationCollections.find(query).toArray();
 
       if (alreadyApplied.length) {
@@ -493,14 +461,14 @@ async function run() {
     });
 
     // api to add a user as admin
-    app.put("/users/admin/:email", async (req, res) => {
+    app.put("/makeAdminUser/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email };
       const options = { upsert: true };
       const updatedDoc = {
         $set: {
           role: "admin",
-        },
+        },employerUser
       };
       const result = await userCollections.updateOne(
         filter,
@@ -511,7 +479,7 @@ async function run() {
     });
 
     // api to find admin user by email
-    app.get("/users/admin/:email", async (req, res) => {
+    app.get("/adminUser/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
       const user = await userCollections.findOne(query);
@@ -519,7 +487,7 @@ async function run() {
     });
 
     // api to find a employer user by email
-    app.get("/users/employer/:email", async (req, res) => {
+    app.get("/employerUser/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
       const user = await userCollections.findOne(query);
@@ -529,7 +497,6 @@ async function run() {
     // api to find jobseeker user by email
     app.get("/jobseekerUser/:email", async (req, res) => {
       const email = req.params.email;
-      // console.log("JobSeekers Email : ",email);
       const query = { email };
       const user = await userCollections.findOne(query);
       res.send({ isJobSeeker: user?.userType === "jobseeker" });
